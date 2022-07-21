@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 class insertpage extends StatefulWidget {
-  const insertpage({Key? key}) : super(key: key);
+  Map? map;
+  String? method;
+  insertpage(this.method, {this.map});
 
   @override
   State<insertpage> createState() => _insertpageState();
@@ -19,6 +21,10 @@ class _insertpageState extends State<insertpage> {
   @override
   void initState() {
     super.initState();
+    if(widget.method=="update"){
+      tname.text=widget.map!['name'];
+      tcontact.text=widget.map!['contact'];
+    }
     DBHelper().createDatabase().then((value) {
       db = value;
     },);
@@ -53,13 +59,29 @@ class _insertpageState extends State<insertpage> {
             String name = tname.text;
             String contact = tcontact.text;
 
-            String qry = "insert into Test(name,contact)values('$name','$contact')";
-            int id = await db!.rawInsert(qry);
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-              return viewpage();
-            },));
-            print(id);
-          }, child: Text("Save"))
+          if(widget.method=="insert")
+            {
+              String qry = "insert into Test(name,contact)values('$name','$contact')";
+              int id = await db!.rawInsert(qry);
+              if(id>0)
+              {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  return viewpage();
+                },));
+              }else{
+                print("not inserted! try again");
+              }}
+              else{
+                String q="update Test set name='$name',contact='$contact',where id=${widget.map!['id']}";
+                int id =await db!.rawUpdate(q);
+                if(id==1)
+                {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                    return viewpage();
+                  },));
+                }
+            }
+            }, child: Text("${widget.method}"))
         ],
       ), onWillPop: goback),
     );

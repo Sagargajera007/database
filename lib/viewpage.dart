@@ -72,6 +72,11 @@ class _viewpageState extends State<viewpage> {
             leading: Text("${m['id']}"),
             title: Text("${m['name']}"),
             subtitle: Text("${m['contact']}"),
+            trailing: IconButton(onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return insertpage("update",map:m,);
+              },));
+            }, icon: Icon(Icons.edit)),
           );
         },
       ): Center(child: Text("No Data Found")))
@@ -80,7 +85,7 @@ class _viewpageState extends State<viewpage> {
         onPressed: () {
           Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) {
-              return insertpage();
+              return insertpage("insert");
             },
           ));
         },
